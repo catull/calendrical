@@ -3,9 +3,8 @@
 'use strict';
 
 describe ('Bahai calendar spec', function () {
-  var date = new Date (2013, 5, 24),
-      julian = date.getJulian (),
-      expected, actual;
+  var date, expected, actual,
+      julian = 2456435.5;
 
   it ('should convert a date to Bahai calendar', function () {
     expect (date.getBahai()).to.be.eql ({

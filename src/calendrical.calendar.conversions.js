@@ -1,33 +1,31 @@
-/* global Calendrical:true */
-
 /* eslint
   "max-statements": [ "error", 26, { "ignoreTopLevelFunctions": true } ],
   "max-params": [ "error", 5 ]
   "no-extra-parens": [ "error", "all", { "conditionalAssign": false } ]
   */
 
-(function (exports) {
-  'use strict';
-  var astro, calendar, cons;
+'use strict';
 
-  exports.calendar = exports.calendar || {};
+var exp, constants, astro;
 
-  // Aliases
-  astro = exports.astro;
-  calendar = exports.calendar;
-  cons = calendar.constants;
+debugger;
+constants = require ('./calendrical.calendar.constants');
+astro = require ('./calendrical.astro');
 
-  // Is a given year in the Gregorian calendar a leap year?
+exp = function () {
+  var calendar = {};
+
+// Is a given year in the Gregorian calendar a leap year?
   calendar.leapGregorian = function (year) {
     return year % 4 === 0 &&
       (year % 100 !== 0 || year % 400 === 0);
   };
 
-  // Determine Julian day number from Gregorian calendar date
+// Determine Julian day number from Gregorian calendar date
   calendar.gregorianToJd = function (year, month, day) {
     var y1 = year - 1;
 
-    return cons.gregorian.EPOCH - 1 + 365 * y1 +
+    return constants.gregorian.EPOCH - 1 + 365 * y1 +
       Math.floor (y1 / 4) -
       Math.floor (y1 / 100) +
       Math.floor (y1 / 400) +
@@ -39,8 +37,9 @@
   calendar.jdToGregorianYear = function (jd) {
     var jd0, depoch, quadricent, dqc, cent, dcent, quad, dquad, yindex, year;
 
+    debugger;
     jd0        = Math.floor (jd - 0.5) + 0.5;
-    depoch     = jd0 - cons.gregorian.EPOCH;
+    depoch     = jd0 - constants.gregorian.EPOCH;
     quadricent = Math.floor (depoch / 146097);
     dqc        = astro.mod (depoch, 146097);
     cent       = Math.floor (dqc / 36524);
@@ -251,7 +250,7 @@
 
     months = this.hebrewYearMonths (year);
 
-    jd = cons.hebrew.EPOCH + this.hebrewDelay1 (year) +
+    jd = constants.hebrew.EPOCH + this.hebrewDelay1 (year) +
       this.hebrewDelay2 (year) + day + 1;
 
     if (month < 7) {
@@ -277,7 +276,7 @@
     var jd0, year, month, day, index, count, first;
 
     jd0   = Math.floor (jd) + 0.5;
-    count = Math.floor ((jd0 - cons.hebrew.EPOCH) * 98496.0 / 35975351.0);
+    count = Math.floor ((jd0 - constants.hebrew.EPOCH) * 98496.0 / 35975351.0);
     year  = count - 1;
 
     for (index = count; jd0 >= this.hebrewToJd (index, 7, 1); index += 1) {
@@ -357,7 +356,7 @@
     }
 
     adr = Math.round (
-        (lasteq - cons.french_revolutionary.EPOCH) / astro.constants.TROPICAL_YEAR) + 1;
+        (lasteq - constants.french_revolutionary.EPOCH) / astro.constants.TROPICAL_YEAR) + 1;
 
     return [ adr, lasteq ];
   };
@@ -386,7 +385,7 @@
   calendar.frenchRevolutionaryToJd = function (an, mois, decadi, jour) {
     var adr, equinoxe, guess, jd;
 
-    guess = cons.french_revolutionary.EPOCH + astro.constants.TROPICAL_YEAR * (an - 2);
+    guess = constants.french_revolutionary.EPOCH + astro.constants.TROPICAL_YEAR * (an - 2);
     adr = [ an - 1, 0 ];
 
     while (adr[0] < an) {
@@ -411,7 +410,7 @@
       Math.ceil (29.5 * (month - 1)) +
       (year - 1) * 354 +
       Math.floor ((3 + 11 * year) / 30) +
-      cons.islamic.EPOCH - 1;
+      constants.islamic.EPOCH - 1;
   };
 
   // Calculate Islamic date from Julian day
@@ -419,7 +418,7 @@
     var jd0, year, month, day;
 
     jd0   = Math.floor (jd) + 0.5;
-    year  = Math.floor ((30 * (jd0 - cons.islamic.EPOCH) + 10646) / 10631);
+    year  = Math.floor ((30 * (jd0 - constants.islamic.EPOCH) + 10646) / 10631);
     month = Math.min (12, Math.ceil ((jd0 - (29 + this.islamicToJd (year, 1, 1))) / 29.5) + 1);
     day   = jd0 - this.islamicToJd (year, month, 1) + 1;
 
@@ -499,7 +498,7 @@
         y1     = astro.mod (y0, 2820) + 474,
         offset = month <= 7 ? 31 * (month - 1) : 30 * (month - 1) + 6;
 
-    return cons.persian.EPOCH - 1 +
+    return constants.persian.EPOCH - 1 +
               1029983 * Math.floor (y0 / 2820) +
               365 * (y1 - 1) +
               Math.floor ((31 * y1 - 5) / 128) +
@@ -552,16 +551,16 @@
   // Return  Universal time of midday on fixed date, date, in Tehran
   calendar.midDayInTehran = function (date) {
     return astro.standardToUniversal (
-          astro.midDay (date, cons.persian.TEHRAN_LOCATION),
-          cons.persian.TEHRAN_LOCATION);
+          astro.midDay (date, constants.persian.TEHRAN_LOCATION),
+          constants.persian.TEHRAN_LOCATION);
   };
 
   // Return the fixed date of Astronomical Persian New Year on or before fixed date
   calendar.persianNewYearOnOrBefore = function (date) {
-    var approx = astro.estimatePriorSolarLongitude (cons.SPRING, this.midDayInTehran (date));
+    var approx = astro.estimatePriorSolarLongitude (constants.SPRING, this.midDayInTehran (date));
 
     return astro.next (Math.floor (approx) - 1, function (day) {
-      return astro.solarLongitude (calendar.midDayInTehran (day)) <= cons.SPRING + 2;
+      return astro.solarLongitude (calendar.midDayInTehran (day)) <= constants.SPRING + 2;
     });
   };
 
@@ -570,12 +569,12 @@
     var temp, nowRuz;
 
     temp = year > 0 ? year - 1 : year;
-    nowRuz = this.persianNewYearOnOrBefore (cons.persian.EPOCH_RD + 180 +
-        Math.floor (cons.MEAN_TROPICAL_YEAR * temp));
+    nowRuz = this.persianNewYearOnOrBefore (constants.persian.EPOCH_RD + 180 +
+        Math.floor (constants.MEAN_TROPICAL_YEAR * temp));
 
     return nowRuz - 1 + day +
             ((month <= 7) ? 31 * (month - 1) : 30 * (month - 1) + 6) +
-            cons.J0000;
+            constants.J0000;
   };
 
   // Calculate Persian date from Julian day
@@ -624,7 +623,7 @@
 
   // Determine Julian day from Mayan long count
   calendar.mayanCountToJd = function (baktun, katun, tun, uinal, kin) {
-    return cons.mayan.COUNT_EPOCH +
+    return constants.mayan.COUNT_EPOCH +
       baktun * 144000 +
       katun * 7200 +
       tun * 360 +
@@ -636,7 +635,7 @@
   calendar.jdToMayanCount = function (jd) {
     var d0, baktun, katun, tun, uinal, kin;
 
-    d0     = Math.floor (jd) + 0.5 - cons.mayan.COUNT_EPOCH;
+    d0     = Math.floor (jd) + 0.5 - constants.mayan.COUNT_EPOCH;
     baktun = Math.floor (d0 / 144000);
     d0     = astro.mod (d0, 144000);
     katun  = Math.floor (d0 / 7200);
@@ -653,7 +652,7 @@
   calendar.jdToMayanHaab = function (jd) {
     var lcount, day;
 
-    lcount = Math.floor (jd) + 0.5 - cons.mayan.COUNT_EPOCH;
+    lcount = Math.floor (jd) + 0.5 - constants.mayan.COUNT_EPOCH;
     day    = astro.mod (lcount + 8 + (18 - 1) * 20, 365);
 
     return [ Math.floor (day / 20) + 1, astro.mod (day, 20) ];
@@ -661,7 +660,7 @@
 
   // Determine Mayan Tzolkin "month" and day from Julian day
   calendar.jdToMayanTzolkin = function (jd) {
-    var lcount = Math.floor (jd) + 0.5 - cons.mayan.COUNT_EPOCH;
+    var lcount = Math.floor (jd) + 0.5 - constants.mayan.COUNT_EPOCH;
 
     return [ astro.amod (lcount + 20, 20), astro.amod (lcount + 4, 13) ];
   };
@@ -673,7 +672,7 @@
   // **[0]** Bahai year
   // **[1]** Julian day number containing equinox for this year.
   calendar.bahaiYear = function (jd) {
-    return this.lastTehranEquinox (jd, cons.bahai.EPOCH);
+    return this.lastTehranEquinox (jd, constants.bahai.EPOCH);
   };
 
   // Bahai uses same leap rule as Gregorian until 171 Bahai Era
@@ -702,7 +701,7 @@
     var by, gy, jd, leap, yearDays;
 
     by = 361 * (major - 1) + 19 * (vahid - 1) + year;
-    gy = by + this.jdToGregorian (cons.bahai.EPOCH)[0] - 1;
+    gy = by + this.jdToGregorian (constants.bahai.EPOCH)[0] - 1;
 
     if (by < 172) {
       leap = this.leapGregorian (gy + 1);
@@ -728,12 +727,12 @@
     var jd0, major, vahid, year, month, day, gy, bstarty, by, bys, days, old, leap, leapDays;
 
     jd0 = Math.floor (jd - 0.5) + 0.5;
-    old = jd0 < cons.bahai.EPOCH172;
+    old = jd0 < constants.bahai.EPOCH172;
 
     if (old) {
       gy      = this.jdToGregorian (jd0)[0];
       leap    = this.leapGregorian (gy + 1);
-      bstarty = this.jdToGregorian (cons.bahai.EPOCH)[0];
+      bstarty = this.jdToGregorian (constants.bahai.EPOCH)[0];
       bys     = gy - (bstarty + (this.gregorianToJd (gy, 1, 1) <= jd0 &&
                     jd0 <= this.gregorianToJd (gy, 3, 20) ? 1 : 0)) + 1;
     } else {
@@ -772,36 +771,36 @@
    * @return {float} Hindu day count
    */
   function jdToHinduDayCount (jd) {
-    return jd - cons.hindu.EPOCH;
+    return jd - constants.hindu.EPOCH;
   }
 
   calendar.jdToHinduSolarOld = function (jd) {
     var sun, year, month, day;
 
     sun = jdToHinduDayCount (jd) + 0.25;
-    year = Math.floor (sun / cons.ARYA_SOLAR_YEAR);
-    month = astro.mod (Math.floor (sun / cons.ARYA_SOLAR_MONTH), 12) + 1;
-    day = Math.floor (astro.mod (sun, cons.ARYA_SOLAR_MONTH)) + 1;
+    year = Math.floor (sun / constants.ARYA_SOLAR_YEAR);
+    month = astro.mod (Math.floor (sun / constants.ARYA_SOLAR_MONTH), 12) + 1;
+    day = Math.floor (astro.mod (sun, constants.ARYA_SOLAR_MONTH)) + 1;
 
     return [ year, month, day ];
   };
 
   calendar.hinduSolarOldToJd = function (year, month, day) {
-    return Math.ceil (cons.hindu.EPOCH + year * cons.ARYA_SOLAR_YEAR +
-        (month - 1) * cons.ARYA_SOLAR_MONTH + day - 0.75) - 0.5;
+    return Math.ceil (constants.hindu.EPOCH + year * constants.ARYA_SOLAR_YEAR +
+        (month - 1) * constants.ARYA_SOLAR_MONTH + day - 0.75) - 0.5;
   };
 
   calendar.jdToHinduLunarOld = function (jd) {
     var sun, newMoon, leap, year, month, day;
 
     sun = jdToHinduDayCount (jd) + 0.25;
-    newMoon = sun - astro.mod (sun, cons.ARYA_LUNAR_MONTH);
-    leap = cons.ARYA_SOLAR_MONTH - cons.ARYA_LUNAR_MONTH >=
-             astro.mod (newMoon, cons.ARYA_SOLAR_MONTH) &&
-             astro.mod (newMoon, cons.ARYA_SOLAR_MONTH) > 0;
-    month = astro.mod (Math.ceil (newMoon / cons.ARYA_SOLAR_MONTH), 12) + 1;
-    day = astro.mod (Math.floor (sun / cons.ARYA_LUNAR_DAY), 30) + 1;
-    year = Math.ceil ((newMoon + cons.ARYA_SOLAR_MONTH) / cons.ARYA_SOLAR_YEAR) - 1;
+    newMoon = sun - astro.mod (sun, constants.ARYA_LUNAR_MONTH);
+    leap = constants.ARYA_SOLAR_MONTH - constants.ARYA_LUNAR_MONTH >=
+             astro.mod (newMoon, constants.ARYA_SOLAR_MONTH) &&
+             astro.mod (newMoon, constants.ARYA_SOLAR_MONTH) > 0;
+    month = astro.mod (Math.ceil (newMoon / constants.ARYA_SOLAR_MONTH), 12) + 1;
+    day = astro.mod (Math.floor (sun / constants.ARYA_LUNAR_DAY), 30) + 1;
+    year = Math.ceil ((newMoon + constants.ARYA_SOLAR_MONTH) / constants.ARYA_SOLAR_YEAR) - 1;
 
     return [ year, month, leap, day ];
   };
@@ -813,10 +812,10 @@
     month = date[1];
     leap = date[2];
     day = date[3];
-    mina = (12 * year - 1) * cons.ARYA_SOLAR_MONTH;
-    lunarNewYear = cons.ARYA_LUNAR_MONTH * Math.ceil (mina / cons.ARYA_LUNAR_MONTH);
+    mina = (12 * year - 1) * constants.ARYA_SOLAR_MONTH;
+    lunarNewYear = constants.ARYA_LUNAR_MONTH * Math.ceil (mina / constants.ARYA_LUNAR_MONTH);
 
-    temp = Math.ceil ((lunarNewYear - mina) / (cons.ARYA_SOLAR_MONTH - cons.ARYA_LUNAR_MONTH));
+    temp = Math.ceil ((lunarNewYear - mina) / (constants.ARYA_SOLAR_MONTH - constants.ARYA_LUNAR_MONTH));
 
     if (leap || temp > month) {
       temp = month - 1;
@@ -824,14 +823,14 @@
       temp = month;
     }
 
-    return Math.ceil (cons.hindu.EPOCH + lunarNewYear + cons.ARYA_LUNAR_MONTH * temp +
-        (day - 1) * cons.ARYA_LUNAR_DAY - 0.75) + 0.5;
+    return Math.ceil (constants.hindu.EPOCH + lunarNewYear + constants.ARYA_LUNAR_MONTH * temp +
+        (day - 1) * constants.ARYA_LUNAR_DAY - 0.75) + 0.5;
   };
 
   // Is an Old Hindu Lunar year leap ?
   calendar.leapHinduLunarOld = function (year) {
-    return astro.mod (year * cons.ARYA_SOLAR_YEAR - cons.ARYA_SOLAR_MONTH,
-                 cons.ARYA_LUNAR_MONTH) >= 23902504679 / 1282400064;
+    return astro.mod (year * constants.ARYA_SOLAR_YEAR - constants.ARYA_SOLAR_MONTH,
+                 constants.ARYA_LUNAR_MONTH) >= 23902504679 / 1282400064;
   };
 
   /**
@@ -892,7 +891,7 @@
    * @return {float} position in degrees
    */
   function hinduMeanPosition (tee, period) {
-    return 360 * astro.mod ((tee - cons.hindu.CREATION) / period, 1);
+    return 360 * astro.mod ((tee - constants.hindu.CREATION) / period, 1);
   }
 
   /**
@@ -921,8 +920,8 @@
    * @return {float} solar longitude
    */
   function hinduSolarLongitude (tee) {
-    return hinduTruePosition (tee, cons.hindu.SIDEREAL_YEAR, 14 / 360,
-        cons.hindu.ANOMALISTIC_YEAR, 1 / 42);
+    return hinduTruePosition (tee, constants.hindu.SIDEREAL_YEAR, 14 / 360,
+        constants.hindu.ANOMALISTIC_YEAR, 1 / 42);
   }
 
   /**
@@ -935,7 +934,7 @@
   function hinduTropicalLongitude (jd) {
     var days, precession;
 
-    days       = Math.floor (jd - cons.hindu.EPOCH_RD);
+    days       = Math.floor (jd - constants.hindu.EPOCH_RD);
     precession = 27 - Math.abs (54 - astro.mod (27 + 108 * 600 / 1577917828 * days, 108));
 
     return astro.mod (hinduSolarLongitude (jd) - precession, 360);
@@ -978,8 +977,8 @@
   function hinduDailyMotion (jd) {
     var motion, anomaly, epicycle, entry, step, factor;
 
-    motion   = 360 / cons.hindu.SIDEREAL_YEAR;
-    anomaly  = hinduMeanPosition (jd, cons.hindu.ANOMALISTIC_YEAR);
+    motion   = 360 / constants.hindu.SIDEREAL_YEAR;
+    anomaly  = hinduMeanPosition (jd, constants.hindu.ANOMALISTIC_YEAR);
     epicycle = 14 / 360 - Math.abs (hinduSine (anomaly)) / 1080;
     entry    = Math.floor (anomaly / astro.angle (0, 225, 0));
     step     = hinduSineTable (entry + 1) - hinduSineTable (entry);
@@ -996,10 +995,10 @@
   function hinduEquationOfTime (jd) {
     var offset, equationSun;
 
-    offset = hinduSine (hinduMeanPosition (jd, cons.hindu.ANOMALISTIC_YEAR));
+    offset = hinduSine (hinduMeanPosition (jd, constants.hindu.ANOMALISTIC_YEAR));
     equationSun = offset * astro.angle (57, 18, 0) * (14 / 360 - Math.abs (offset) / 1080);
 
-    return hinduDailyMotion (jd) / 360 * equationSun / 360 * cons.hindu.SIDEREAL_YEAR;
+    return hinduDailyMotion (jd) / 360 * equationSun / 360 * constants.hindu.SIDEREAL_YEAR;
   }
 
   /**
@@ -1018,7 +1017,7 @@
    */
   function hinduSunrise (jd) {
     return jd + 0.25 - hinduEquationOfTime (jd) + 1577917828 / 1582237828 / 360 *
-               (hinduAscensionalDifference (jd, cons.hindu.UJJAIN_LOCATION) +
+               (hinduAscensionalDifference (jd, constants.hindu.UJJAIN_LOCATION) +
                 hinduSolarSiderealDifference (jd) / 4);
   }
 
@@ -1037,8 +1036,8 @@
    * @return {float} longitude
    */
   function hinduLunarLongitude (tee) {
-    return hinduTruePosition (tee, cons.hindu.SIDEREAL_MONTH, 32 / 360,
-        cons.hindu.ANOMALISTIC_MONTH, 1 / 96);
+    return hinduTruePosition (tee, constants.hindu.SIDEREAL_MONTH, 32 / 360,
+        constants.hindu.ANOMALISTIC_MONTH, 1 / 96);
   }
 
   /**
@@ -1066,7 +1065,7 @@
    * @return {int} solar year
    */
   function hinduCalendarYear (tee) {
-    return Math.round ((tee - cons.hindu.EPOCH_RD) / cons.hindu.SIDEREAL_YEAR -
+    return Math.round ((tee - constants.hindu.EPOCH_RD) / constants.hindu.SIDEREAL_YEAR -
                  hinduSolarLongitude (tee) / 360);
   }
 
@@ -1078,7 +1077,7 @@
    */
   function hinduNewMoonBefore (tee) {
     var eps = 7.888609052210118e-31,
-        tau = tee - hinduLunarPhase (tee) * cons.hindu.SYNODIC_MONTH / 360;
+        tau = tee - hinduLunarPhase (tee) * constants.hindu.SYNODIC_MONTH / 360;
 
     return astro.binarySearch (tau - 1, Math.min (tee, tau + 1),
         function (lower, upper) {
@@ -1092,10 +1091,10 @@
   calendar.jdToHinduSolar = function (jd) {
     var jd0, critical, month, year, day, approx, begin;
 
-    jd0      = jd - cons.J0000;
+    jd0      = jd - constants.J0000;
     critical = hinduSunrise (jd0 + 1);
     month    = hinduZodiac (critical);
-    year     = hinduCalendarYear (critical) - cons.hindu.SOLAR_ERA;
+    year     = hinduCalendarYear (critical) - constants.hindu.SOLAR_ERA;
     approx   = jd0 - 3 - astro.mod (Math.floor (hinduSolarLongitude (critical)), 30);
 
     begin    = astro.next (approx, function (index) {
@@ -1108,8 +1107,8 @@
   };
 
   calendar.hinduSolarToJd = function (year, month, day) {
-    var begin = Math.floor ((year + cons.hindu.SOLAR_ERA +
-                 (month - 1) / 12) * cons.hindu.SIDEREAL_YEAR + cons.hindu.EPOCH_RD);
+    var begin = Math.floor ((year + constants.hindu.SOLAR_ERA +
+                 (month - 1) / 12) * constants.hindu.SIDEREAL_YEAR + constants.hindu.EPOCH_RD);
 
     return day - 1 + astro.next (begin - 3, function (param) {
       var zodiac, sunrise;
@@ -1118,7 +1117,7 @@
       zodiac = hinduZodiac (sunrise);
 
       return zodiac === month;
-    }) + cons.J0000;
+    }) + constants.J0000;
   };
 
   // Return the Hindu lunar date, new_moon scheme, equivalent to fixed date
@@ -1126,7 +1125,7 @@
     var jd0, critical, day, dayLeap, lastNewMoon, nextNewMoon, monthSolar,
         monthLeap, month, year;
 
-    jd0      = jd - cons.J0000;
+    jd0      = jd - constants.J0000;
     critical = hinduSunrise (jd0);
     day      = hinduLunarDayFromMoment (critical);
     dayLeap  = day === hinduLunarDayFromMoment (hinduSunrise (jd0 - 1));
@@ -1135,7 +1134,7 @@
     monthSolar  = hinduZodiac (lastNewMoon);
     monthLeap   = monthSolar === hinduZodiac (nextNewMoon);
     month    = astro.amod (monthSolar + 1, 12);
-    year     = hinduCalendarYear (month <= 2 ? jd0 + 180 : jd0) - cons.hindu.LUNAR_ERA;
+    year     = hinduCalendarYear (month <= 2 ? jd0 + 180 : jd0) - constants.hindu.LUNAR_ERA;
 
     return [ year, month, monthLeap, day, dayLeap ];
   };
@@ -1143,16 +1142,16 @@
   calendar.hinduLunarToJd = function (year, month, monthLeap, day, dayLeap) {
     var approx, s0, k0, temp, mid, est, tau, date;
 
-    approx = cons.hindu.EPOCH_RD + cons.hindu.SIDEREAL_YEAR *
-             (year + cons.hindu.LUNAR_ERA + (month - 1) / 12);
-    s0     = Math.floor (approx + 180 - cons.hindu.SIDEREAL_YEAR *
+    approx = constants.hindu.EPOCH_RD + constants.hindu.SIDEREAL_YEAR *
+             (year + constants.hindu.LUNAR_ERA + (month - 1) / 12);
+    s0     = Math.floor (approx + 180 - constants.hindu.SIDEREAL_YEAR *
                astro.mod (hinduSolarLongitude (approx) - (month - 1) * 30 + 180, 360) / 360);
     k0     = hinduLunarDayFromMoment (s0 + 0.25);
 
     if (k0 > 3 && k0 < 27) {
       temp = k0;
     } else {
-      mid = calendar.jdToHinduLunar (s0 - 15 + cons.J0000);
+      mid = calendar.jdToHinduLunar (s0 - 15 + constants.J0000);
 
       if (mid[1] !== month || (mid[2] && !monthLeap)) {
         temp = astro.mod (k0 + 15, 30) - 15;
@@ -1175,7 +1174,7 @@
       date += 1;
     }
 
-    return date + cons.J0000;
+    return date + constants.J0000;
   };
 
   /**
@@ -1185,7 +1184,7 @@
    */
   function siderealSolarLongitude (tee) {
     return astro.mod (astro.solarLongitude (tee) - astro.precession (tee) +
-        cons.hindu.SIDEREAL_START, 360);
+        constants.hindu.SIDEREAL_START, 360);
   }
 
   /**
@@ -1194,7 +1193,7 @@
    * @return {int} solar year
    */
   function hinduAstroCalendarYear (tee) {
-    return Math.round ((tee - cons.hindu.EPOCH_RD) / cons.MEAN_SIDEREAL_YEAR -
+    return Math.round ((tee - constants.hindu.EPOCH_RD) / constants.MEAN_SIDEREAL_YEAR -
             siderealSolarLongitude (tee) / 360);
   }
 
@@ -1214,7 +1213,7 @@
    * @return {float} sunrise on that day
    */
   function altHinduSunrise (date) {
-    var rise = astro.dawn (date, cons.hindu.UJJAIN_LOCATION, 47 / 60);
+    var rise = astro.dawn (date, constants.hindu.UJJAIN_LOCATION, 47 / 60);
 
     return Math.round (rise * 24 * 60) / 24 / 60;
   }
@@ -1233,7 +1232,7 @@
     var jd0, critical, day, dayLeap, lastNewMoon, nextNewMoon, monthSolar,
         monthLeap, month, year;
 
-    jd0         = jd - cons.J0000;
+    jd0         = jd - constants.J0000;
     critical    = altHinduSunrise (jd0);
     day         = astroLunarDayFromMoment (critical);
     dayLeap     = day === astroLunarDayFromMoment (altHinduSunrise (jd0 - 1));
@@ -1242,7 +1241,7 @@
     monthSolar  = siderealZodiac (lastNewMoon);
     monthLeap   = monthSolar === siderealZodiac (nextNewMoon);
     month       = astro.amod (monthSolar + 1, 12);
-    year        = hinduAstroCalendarYear (month <= 2 ? jd0 + 180 : jd0) - cons.hindu.LUNAR_ERA;
+    year        = hinduAstroCalendarYear (month <= 2 ? jd0 + 180 : jd0) - constants.hindu.LUNAR_ERA;
 
     return [ year, month, monthLeap, day, dayLeap ];
   };
@@ -1251,16 +1250,16 @@
   calendar.hinduLunarAstroToJd = function (year, month, monthLeap, day, dayLeap) {
     var approx, s0, k0, temp, mid, est, tau, date;
 
-    approx = cons.hindu.EPOCH_RD + cons.MEAN_SIDEREAL_YEAR *
-             (year + cons.hindu.LUNAR_ERA + (month - 1) / 12);
-    s0 = Math.floor (approx - 1 / 360 * cons.MEAN_SIDEREAL_YEAR *
+    approx = constants.hindu.EPOCH_RD + constants.MEAN_SIDEREAL_YEAR *
+             (year + constants.hindu.LUNAR_ERA + (month - 1) / 12);
+    s0 = Math.floor (approx - 1 / 360 * constants.MEAN_SIDEREAL_YEAR *
               (astro.mod (siderealSolarLongitude (approx) - (month - 1) * 30 + 180, 360) - 180));
     k0 = astroLunarDayFromMoment (s0 + 0.25);
 
     if (k0 > 3 && k0 < 27) {
       temp = k0;
     } else {
-      mid = this.jdToHinduLunarAstro (s0 - 15 + cons.J0000);
+      mid = this.jdToHinduLunarAstro (s0 - 15 + constants.J0000);
 
       if (mid[1] !== month || (mid[2] && !monthLeap)) {
         temp = astro.mod (k0 + 15, 30) - 15;
@@ -1282,7 +1281,7 @@
       date += 1;
     }
 
-    return cons.J0000 + date;
+    return constants.J0000 + date;
   };
 
   /**
@@ -1291,17 +1290,17 @@
    * @return {float} sunset of that date
    */
   function hinduAstroSunset (date) {
-    return astro.dusk (date, cons.hindu.UJJAIN_LOCATION, 0);
+    return astro.dusk (date, constants.hindu.UJJAIN_LOCATION, 0);
   }
 
   // Return the Astronomical Hindu (Tamil) solar date equivalent to fixed date.
   calendar.jdToHinduSolarAstro = function (jd) {
     var jd0, critical, year, month, approx, begin, day;
 
-    jd0      = jd - cons.J0000;
+    jd0      = jd - constants.J0000;
     critical = hinduAstroSunset (jd0);
     month    = siderealZodiac (critical);
-    year     = hinduAstroCalendarYear (critical) - cons.hindu.SOLAR_ERA;
+    year     = hinduAstroCalendarYear (critical) - constants.hindu.SOLAR_ERA;
     approx   = jd0 - 3 - astro.mod (Math.floor (siderealSolarLongitude (critical)), 30);
     begin    = astro.next (approx, function (index) {
       return siderealZodiac (hinduAstroSunset (index)) === month;
@@ -1313,13 +1312,13 @@
 
   // Return the fixed date corresponding to Astronomical Hindu Solar date (Tamil rule; Saka era).
   calendar.hinduSolarAstroToJd = function (year, month, day) {
-    var approx = cons.hindu.EPOCH - 3 + Math.floor ((year + cons.hindu.SOLAR_ERA +
-                  (month - 1) / 12) * cons.MEAN_SIDEREAL_YEAR) - cons.J0000,
+    var approx = constants.hindu.EPOCH - 3 + Math.floor ((year + constants.hindu.SOLAR_ERA +
+                  (month - 1) / 12) * constants.MEAN_SIDEREAL_YEAR) - constants.J0000,
         begin = astro.next (approx, function (i0) {
           return siderealZodiac (hinduAstroSunset (i0)) === month;
         });
 
-    return cons.J0000 + begin + day - 1;
+    return constants.J0000 + begin + day - 1;
   };
 
   // Obtain Julian day for Indian Civil date
@@ -1459,14 +1458,14 @@
     sun        = tibetanSunEquation (12 * solAnomaly);
     moon       = tibetanMoonEquation (28 * lunAnomaly);
 
-    return Math.floor (cons.tibetan.EPOCH + mean - sun + moon - 0.5) + 0.5;
+    return Math.floor (constants.tibetan.EPOCH + mean - sun + moon - 0.5) + 0.5;
   };
 
   calendar.jdToTibetan = function (jd) {
     var capY, years, year0, month0, est, day0, monthLeap, day, month, year, temp, dayLeap;
 
     capY = 365 + 4975 / 18382;
-    years = Math.ceil ((jd - cons.tibetan.EPOCH) / capY);
+    years = Math.ceil ((jd - constants.tibetan.EPOCH) / capY);
 
     year0 = astro.final (years, function (y0) {
       return jd >= calendar.tibetanToJd (y0, 1, false, 1, false);
@@ -1512,5 +1511,7 @@
     return month === this.jdToTibetan (this.tibetanToJd (year, month, true, 2, false))[1];
   };
 
-  return exports;
-} (Calendrical || {}));
+  return calendar;
+} ();
+
+module.exports = exp;

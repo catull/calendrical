@@ -1,14 +1,7 @@
-/* global Calendrical:true */
-
 'use strict';
 
-(function (exports) {
-  var calendar;
-
-  exports.calendar = exports.calendar || {};
-  calendar = exports.calendar;
-
-  calendar.constants = {
+var constants = (function () {
+  return {
     // *Julian date of Gregorian epoch: 0000-01-01*
     J0000: 1721424.5,
     // *Julian date at Unix epoch: 1970-01-01*
@@ -123,6 +116,6 @@
       EPOCH_RD: -46410 // 172/12/07 BCE (Gregorian)
     }
   };
+} ());
 
-  return exports;
-} (Calendrical || {}));
+module.exports = constants;

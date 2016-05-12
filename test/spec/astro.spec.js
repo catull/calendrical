@@ -1,13 +1,40 @@
-/* global astro cal describe expect it: true */
+/* global Calendrical astro cal describe expect it: true */
 /* eslint
   max-params: [ "error", 4 ] */
 
 'use strict';
 
+var Calendrical = {},
+    chai, expect, astro, cal;
+
+Calendrical.constants = require ('../../src/calendrical.calendar.constants');
+Calendrical.astro = require ('../../src/calendrical.astro');
+
+    // c2 = require ('../../src/calendrical.calendar.base'),
+    // c3 = require ('../../src/calendrical.calendar.calc'),
+Calendrical.calendar = require ('../../src/calendrical.calendar.conversions');
+
+require ('../../src/calendrical.date');
+
+chai = require ('chai');
+require ('dirty-chai');
+require ('mocha');
+
+/*
+mocha.setup ({
+  ui: 'bdd',
+  ignoreLeaks: true
+});
+*/
+
+expect = chai.expect;
+
+astro = Calendrical.astro;
+cal   = Calendrical.calendar;
+
 describe ('Astro spec', function () {
-  var date = new Date (2013, 5, 24, 21, 24, 3), // Mon Jun 24 2013 21:24:03 GMT
-      julian = date.getJulian (),
-      fixed = julian - cal.constants.J0000;
+  var julian = 2456435.5,
+      fixed = julian - Calendrical.constants.J0000;
 
   it ('should determine the week-day', function () {
     expect (astro.jwday (julian)).to.equal (6); // Monday

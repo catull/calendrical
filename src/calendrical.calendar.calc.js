@@ -1,8 +1,8 @@
-/* global Calendrical:true */
+var calc,
+    exports = module.exports;
 
-'use strict';
-
-(function (exports) {
+calc = function () {
+  'use strict';
   var astro, calendar, data;
 
   exports.calendar = exports.calendar || {};
@@ -214,4 +214,6 @@
   };
 
   return exports;
-} (Calendrical || {}));
+} ();
+
+module.exports = calc;
