@@ -8,7 +8,6 @@
 
 var exp, constants, astro;
 
-debugger;
 constants = require ('./calendrical.calendar.constants');
 astro = require ('./calendrical.astro');
 
@@ -37,7 +36,6 @@ exp = function () {
   calendar.jdToGregorianYear = function (jd) {
     var jd0, depoch, quadricent, dqc, cent, dcent, quad, dquad, yindex, year;
 
-    debugger;
     jd0        = Math.floor (jd - 0.5) + 0.5;
     depoch     = jd0 - constants.gregorian.EPOCH;
     quadricent = Math.floor (depoch / 146097);
@@ -336,7 +334,7 @@ exp = function () {
   //
   // **[0]** Année de la Révolution
   // **[1]** Julian day number containing equinox for this year.
-  calendar.anneeDaLaRevolution = function (jd) {
+  calendar.anneeDeLaRevolution = function (jd) {
     var guess = this.jdToGregorian (jd)[0] - 2,
         lasteq, nexteq, adr;
 
@@ -369,7 +367,7 @@ exp = function () {
     var jd0, an, mois, decadi, jour, adr, equinoxe;
 
     jd0      = Math.floor (jd) + 0.5;
-    adr      = this.anneeDaLaRevolution (jd0);
+    adr      = this.anneeDeLaRevolution (jd0);
     an       = adr[0];
     equinoxe = adr[1];
     mois     = Math.floor ((jd0 - equinoxe) / 30) + 1;
@@ -389,7 +387,7 @@ exp = function () {
     adr = [ an - 1, 0 ];
 
     while (adr[0] < an) {
-      adr = this.anneeDaLaRevolution (guess);
+      adr = this.anneeDeLaRevolution (guess);
       guess = adr[1] + (astro.constants.TROPICAL_YEAR + 2);
     }
 

@@ -7,8 +7,6 @@
 var exports = module.exports,
     astro, calendar, data;
 
-debugger;
-
 exports.Calendrical = exports.Calendrical || {};
 exports.Calendrical.astro = exports.Calendrical.astro || {};
 astro = exports.Calendrical.astro;
